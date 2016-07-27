@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<persons>
+
+<person>
+	<name>John</name>
+	<address>123 S Main St.</address>
+<city>Pleasanton</city>
+<state>CA</state>
+<zip>94550</zip>
+<assets>
+	<item>a</item>
+	<item>b</item>
+	<item>c</item>
+</assets>
+</person>
+
+<person>
+<name>Mary</name>
+<address>123 S Main St.</address>
+<city>Pleasanton</city>
+<state>CA</state>
+<zip>94550</zip>
+<assets>
+	<item>d</item>
+	<item>e</item>
+	<item>f</item>
+</assets>
+
+</person>
+
+</persons>

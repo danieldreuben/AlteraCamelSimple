@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:camel="http://camel.apache.org/schema/spring" xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+<!--
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+-->
+	<bean id="myrouter" class="com.altera.camel.simple.MyRouteBuilder"/>
+<!--
+	<bean class="org.apache.camel.component.cxf.transport.CamelTransportFactory">
+		<property name="bus" ref="cxf" />
+		<property name="camelContext" ref="camelContext" />
+		<property name="transportIds">
+			<list>
+				<value>http://cxf.apache.org/transports/camel</value>
+			</list>
+		</property>
+	</bean>
+
+	<jaxws:endpoint implementor="#echoService" address="camel://direct:echoService"
+		serviceName="echo:echo" id="echoService.camel" implementorClass="com.altera.camel.simple.EchoService"
+		xmlns:echo="http://cameldemo/echoservice/v1">
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:endpoint>
+-->
+<!--
+	<bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="vm://localhost?broker.persistent=false" />
+			</bean>
+		</property>
+		<property name="maxConcurrentConsumers" value="20" />
+	</bean>
+-->
+	<camel:camelContext trace="true" id="http_router">
+		 <camel:routeBuilder ref="myrouter" />
+	</camel:camelContext>
+
+	<camel:camelContext trace="true">
+		<camel:route>
+			<!-- Handle HTTP requests through JMS -->
+			<camel:from uri="servlet:///px/ucm?servletName=camel" />
+    		<!-- and then print to the console -->
+	          <camel:transform>
+	            <camel:simple>Hello from ucm how are you?</camel:simple>
+	          </camel:transform>
+			<!-- <camel:to uri="jms://echo.internal.entry" />-->
+		</camel:route>
+
+		<camel:route>
+			<!-- Handle HTTP requests through JMS -->
+			<camel:from uri="servlet:///px/hello/y?servletName=camel" />
+    		<!-- and then print to the console -->
+	          <camel:transform>
+	            <camel:simple>Hello from y how are you?</camel:simple>
+	          </camel:transform>
+			<!-- <camel:to uri="jms://echo.internal.entry" />-->
+		</camel:route>
+<!--
+		<camel:route>
+			<camel:from uri="jms://echo.internal.entry" />
+			<camel:to uri="direct://echoService" />
+		</camel:route>
+-->
+	    <camel:route>
+	      <!-- incoming requests from the servlet is routed -->
+	      <camel:from uri="servlet:///px/hello/x?servletName=camel"/>
+	      <camel:choice>
+	        <camel:when>
+	          <!-- is there a header with the key name? -->
+	          <camel:header>name</camel:header>
+	          <!-- yes so return back a message to the user -->
+	          <camel:transform>
+	            <camel:simple>Hello ${header.name} how are you?</camel:simple>
+	          </camel:transform>
+	        </camel:when>
+	        <camel:otherwise>
+	          <!-- if no name parameter then output a syntax to the user -->
+	          <camel:transform>
+	            <camel:constant>Add a name parameter to uri, eg ?name=foo</camel:constant>
+	          </camel:transform>
+	        </camel:otherwise>
+	      </camel:choice>
+	    </camel:route>
+	</camel:camelContext>
+
+</beans>
