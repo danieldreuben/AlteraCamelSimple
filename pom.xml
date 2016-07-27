@@ -33,7 +33,9 @@
               <version>9.3.0.v20150612</version>
             </plugin>
             <plugin>
-                <!-- Not really required, but handy to have WSDL for debugging -->
+
+
+                <!-- Not really required, but handy to have WSDL for debugging Ok -->
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-java2ws-plugin</artifactId>
                 <version>${cxf.version}</version>
